@@ -102,10 +102,8 @@ public class WebWorker implements Runnable
 					{
 						path2 = "/res/acc/homepage.html";
 					}
-					// Windows
-					String path1 = "C:\\Users\\67062\\OneDrive\\ÎÄµµ\\GitHub\\Programs\\SimpleWebServer";
 					// Linux
-					//String path1 = ".";
+					String path1 = ".";
 					String path = path1 + path2;
 					serveFile = new File(path);
 					System.out.print(path);
