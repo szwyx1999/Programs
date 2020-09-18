@@ -22,11 +22,14 @@ package edu.nmsu.cs.webserver;
  **/
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -34,6 +37,9 @@ public class WebWorker implements Runnable
 {
 
 	private Socket socket;
+	//##################################
+	private File serveFile;
+	//##################################
 
 	/**
 	 * Constructor: must have a valid open socket
@@ -86,6 +92,25 @@ public class WebWorker implements Runnable
 				System.err.println("Request line: (" + line + ")");
 				if (line.length() == 0)
 					break;
+				//#############################################
+				if (line.contains("GET"))
+				{
+					String [] line_split = line.split(" ");
+					String path2 = line_split[1];
+					System.out.print(path2);
+					if (path2.equals("/"))
+					{
+						path2 = "/res/acc/homepage.html";
+					}
+					// Windows
+					String path1 = "C:\\Users\\67062\\OneDrive\\ÎÄµµ\\GitHub\\Programs\\SimpleWebServer";
+					// Linux
+					//String path1 = ".";
+					String path = path1 + path2;
+					serveFile = new File(path);
+					System.out.print(path);
+				}
+				//##############################################
 			}
 			catch (Exception e)
 			{
@@ -109,11 +134,20 @@ public class WebWorker implements Runnable
 		Date d = new Date();
 		DateFormat df = DateFormat.getDateTimeInstance();
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		os.write("HTTP/1.1 200 OK\n".getBytes());
+		//##################################################
+		if (serveFile.exists() && serveFile.isFile())
+		{
+			os.write("HTTP/1.1 200 OK\n".getBytes());
+		}
+		else 
+		{
+			os.write("HTTP/1.1 404 Not Found\n".getBytes());	
+		}
+		//##################################################
 		os.write("Date: ".getBytes());
 		os.write((df.format(d)).getBytes());
 		os.write("\n".getBytes());
-		os.write("Server: Jon's very own server\n".getBytes());
+		os.write("Server: Yuxi's very own server\n".getBytes());
 		// os.write("Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT\n".getBytes());
 		// os.write("Content-Length: 438\n".getBytes());
 		os.write("Connection: close\n".getBytes());
@@ -132,9 +166,32 @@ public class WebWorker implements Runnable
 	 **/
 	private void writeContent(OutputStream os) throws Exception
 	{
-		os.write("<html><head></head><body>\n".getBytes());
-		os.write("<h3>My web server works!</h3>\n".getBytes());
-		os.write("</body></html>\n".getBytes());
+		//#################################################
+		if (serveFile.exists() && serveFile.isFile())
+		{
+			BufferedReader br = new BufferedReader(new FileReader(serveFile));
+			String s;
+			Date d = new Date();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			df.setTimeZone(TimeZone.getTimeZone("GMT"));
+			while ((s=br.readLine()) != null)
+			{
+				s = s.replace("<cs371date>", df.format(d));
+				s = s.replace("<cs371server>", "Yuxi's server");
+				os.write(s.getBytes());
+			}
+			br.close();
+		}
+		else
+		{
+			os.write("<html><head></head><body>\n".getBytes());
+			os.write("<h3>404 Error Page Not Found</h3>\n".getBytes());
+			os.write("</body></html>\n".getBytes());
+		}
+		//########################################################
+		//os.write("<html><head></head><body>\n".getBytes());
+		//os.write("<h3>My web server works!</h3>\n".getBytes());
+		//os.write("</body></html>\n".getBytes());
 	}
 
 } // end class
