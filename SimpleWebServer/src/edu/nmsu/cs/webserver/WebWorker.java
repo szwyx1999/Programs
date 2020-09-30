@@ -102,7 +102,7 @@ public class WebWorker implements Runnable
 					System.out.println(path2);
 					if (path2.equals("/"))
 					{
-						path2 = "/www/res/acc/homepage.html";
+						path2 = "/res/acc/homepage.html";
 					}
 					// Linux
 					String path1 = ".";
