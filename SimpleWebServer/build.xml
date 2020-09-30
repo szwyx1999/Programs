@@ -1,4 +1,4 @@
-<project name="Programs" default="compile" basedir=".">
+<project name="Programs" default="run" basedir=".">
     <description>
         Buildfile to compile and run SimpleWebServer program
     </description>
