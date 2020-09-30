@@ -23,6 +23,7 @@ package edu.nmsu.cs.webserver;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +40,7 @@ public class WebWorker implements Runnable
 	private Socket socket;
 	//##################################
 	private File serveFile;
+	private static final int BUFFER_SIZE = 1024;
 	//##################################
 
 	/**
@@ -97,18 +99,16 @@ public class WebWorker implements Runnable
 				{
 					String [] line_split = line.split(" ");
 					String path2 = line_split[1];
-					System.out.print(path2);
+					System.out.println(path2);
 					if (path2.equals("/"))
 					{
 						path2 = "/www/res/acc/homepage.html";
 					}
 					// Linux
-					//String path1 = ".";
-					// windows
-					String path1 = "C:\\Users\\67062\\OneDrive\\ÎÄµµ\\GitHub\\Programs\\SimpleWebServer";
-					String path = path1 + path2;
+					String path1 = ".";
+					String path = path1 + "/www" + path2;
 					serveFile = new File(path);
-					System.out.print(path);
+					System.out.println("path: " + path);
 				}
 				//##############################################
 			}
@@ -167,8 +167,12 @@ public class WebWorker implements Runnable
 	private void writeContent(OutputStream os) throws Exception
 	{
 		//#################################################
+		byte[] buffer = new byte[BUFFER_SIZE];
+		FileInputStream fis = null;
+		
 		if (serveFile.exists() && serveFile.isFile())
 		{
+			/*
 			BufferedReader br = new BufferedReader(new FileReader(serveFile));
 			String s;
 			Date d = new Date();
@@ -181,6 +185,15 @@ public class WebWorker implements Runnable
 				os.write(s.getBytes());
 			}
 			br.close();
+			*/
+				
+			fis = new FileInputStream(serveFile);
+			int l = fis.read(buffer, 0, BUFFER_SIZE);
+			while (l != -1) 
+			{
+				os.write(buffer, 0, l);
+				l = fis.read(buffer, 0, BUFFER_SIZE);
+			}
 		}
 		else
 		{
