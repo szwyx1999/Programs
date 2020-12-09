@@ -1,0 +1,59 @@
+<project name="Programs" default="run" basedir=".">
+    <description>
+        P4
+    </description>
+
+  <!-- set global properties for this build -->
+  <property name="src" location="src/"/>
+  <property name="bin" location="bin/"/>
+
+  <!-- create new bin folder -->
+  <target name="init" depends="clean" >
+    <mkdir dir="${bin}"/>
+  </target>
+
+  
+  <path id="classpath">
+    <fileset dir="${src}">
+        <include name="**/*.jar" />
+    </fileset>
+    <pathelement location="${build}" />
+  </path>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${bin}"/>
+  </target>
+
+
+  <target name="compile" description="generate the distribution" depends="init">
+        <javac srcdir="${src}" destdir="${bin}">
+            <classpath refid="classpath" />
+        </javac>
+        <jar jarfile="${bin}/${jarname}.jar" basedir="${bin}">
+        </jar>
+  </target>
+
+
+  <target name="run" depends="compile" description="run">
+    <java classname="edu.nmsu.cs.circles.CircleRun" classpath="${bin}">
+    </java>
+  </target>
+
+  <target name="testCircle1" depends="compile" description="testCircle1">
+    <java classname="edu.nmsu.cs.circles.Circle1Test" classpath="${bin}">
+    </java>
+  </target>
+
+  <target name="testCircle2" depends="compile" description="testCircle2">
+    <java classname="edu.nmsu.cs.circles.Circle2Test" classpath="${bin}">
+    </java>
+  </target>
+
+  <target name="test" depends="compile" description="test Circle1 and 2">
+    <java classname="edu.nmsu.cs.circles.Circle1Test" classpath="${bin}">
+    </java>
+    <java classname="edu.nmsu.cs.circles.Circle2Test" classpath="${bin}">
+    </java>
+  </target>
+
+</project>
